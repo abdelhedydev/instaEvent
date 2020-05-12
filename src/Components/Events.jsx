@@ -1,33 +1,131 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import React from 'react';
+import styled from 'styled-components';
+import places from 'places.js';
 import {
-  Table, Grid, Button, Icon, Modal, Header,
+  Table, Grid, Button, Icon, Modal, Form, TextArea, Dropdown,
 } from 'semantic-ui-react';
+import DatePicker from 'react-datepicker';
+
+import 'react-datepicker/dist/react-datepicker.css';
 import Sidebar from './Sidebar';
 
+const Wrapper = styled.div`
+  width:100%;
+  display: inline-flex;
+  justify-content: space-between;
+  .react-datepicker-wrapper{
+    width:45%
+  }
 
-const EventForm = () => (
-  <Modal
-    trigger={(
-      <Button floated="right" color="twitter">
-        <Icon name="calendar" />
-        Ajouter
-      </Button>
-)}
-    centered={false}
-  >
-    <Modal.Header>Nouveau Evenement</Modal.Header>
-    <Modal.Content>
-      <Modal.Description>
-        <Header>Default Profile Image</Header>
-        <p>
-          Don&apos;t forgert Drop down : Multiple Search Selection
-          Adresse: city api
-        </p>
-        <p>Is it okay to use this photo?</p>
-      </Modal.Description>
-    </Modal.Content>
-  </Modal>
-);
+`;
+
+
+const options = [
+  { key: 'm', text: 'Male', value: 'male' },
+  { key: 'f', text: 'Female', value: 'female' },
+  { key: 'o', text: 'Other', value: 'other' },
+];
+
+const EventForm = () => {
+  const [startDate, setStartDate] = React.useState(new Date('2014/02/08'));
+  const [endDate, setEndDate] = React.useState(new Date('2014/02/10'));
+  const [particpants, setParticiants] = React.useState([{
+    key: 1,
+    text: 'abdelhedi.hlel@aa.fr',
+    value: 1,
+  }, {
+    key: 2,
+    text: 'ahmed.hlel@aa.fr',
+    value: 2,
+  }]);
+  return (
+    <Modal
+      trigger={(
+        <Button floated="right" color="twitter">
+          <Icon name="calendar" />
+          Ajouter
+        </Button>
+      )}
+      centered={false}
+    >
+      <Modal.Header>Nouvelle Evenement</Modal.Header>
+      <Modal.Content>
+        <Modal.Description>
+          <Form>
+            <Form.Field>
+              <label>Titre</label>
+              <input placeholder="First Name" />
+            </Form.Field>
+            <Form.Field>
+              <label>Date de début et de fin</label>
+
+              <Wrapper>
+                <DatePicker
+                  selected={startDate}
+                  onChange={(date) => setStartDate(date)}
+                  selectsStart
+                  startDate={startDate}
+                  endDate={endDate}
+                  showTimeSelect
+                  timeFormat="HH:mm"
+                  timeIntervals={15}
+                  timeCaption="time"
+                  dateFormat="MMMM d, yyyy h:mm aa"
+                />
+                <DatePicker
+                  selected={endDate}
+                  onChange={(date) => setEndDate(date)}
+                  selectsEnd
+                  startDate={startDate}
+                  endDate={endDate}
+                  minDate={startDate}
+                  showTimeSelect
+                  timeFormat="HH:mm"
+                  timeIntervals={15}
+                  timeCaption="time"
+                  dateFormat="MMMM d, yyyy h:mm aa"
+                />
+              </Wrapper>
+            </Form.Field>
+            <Form.Field widths="equal">
+              <Form.Select
+                fluid
+                label="Catégorie"
+                options={options}
+                placeholder="Catégorie"
+              />
+            </Form.Field>
+            <Form.Field>
+              <label>Particpants</label>
+              <Dropdown
+                placeholder="State"
+                fluid
+                multiple
+                search
+                selection
+                options={particpants}
+              />
+
+            </Form.Field>
+            <Form.Field>
+              <label>Lieu</label>
+              <input type="search" id="address-input" placeholder="Where are we going?" />
+
+            </Form.Field>
+            <Form.Field />
+            <Form.Field
+              control={TextArea}
+              label="Description"
+              placeholder="Tell us more about you..."
+            />
+            <Button color="green" type="submit">Submit</Button>
+          </Form>
+        </Modal.Description>
+      </Modal.Content>
+    </Modal>
+  );
+};
 
 const Events = () => (
   <Sidebar>
