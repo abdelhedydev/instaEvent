@@ -9,7 +9,7 @@ import {
   Redirect,
 } from 'react-router-dom';
 import {
-  Calendar, Events, Login, Dashboard, Participants,
+  Calendar, Events, Login,
 } from './Components';
 
 
@@ -36,10 +36,9 @@ export default function App() {
         {/* A <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
         <Switch>
-          <PrivateRoute path="/stats" component={Dashboard} />
+
           <PrivateRoute path="/evenements" component={Events} />
           <PrivateRoute path="/calendrier" component={Calendar} />
-          <PrivateRoute path="/participants" component={Participants} />
           <Route path="/">
             <Login />
           </Route>

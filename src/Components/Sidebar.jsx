@@ -36,14 +36,6 @@ const SidebarExampleSidebar = ({ children }) => {
             <Icon name="calendar" />
             Evénements
           </Menu.Item>
-          <Menu.Item as="a" onClick={() => goTo('/participants')}>
-            <Icon name="users" />
-            Participants
-          </Menu.Item>
-          <Menu.Item as="a">
-            <Icon name="dashboard" onClick={() => goTo('/stats')} />
-            Dashboard
-          </Menu.Item>
           <Menu.Item as="a" onClick={() => goTo('/connexion')}>
             <Icon name="arrow alternate circle left outline" />
             Déconnexion
