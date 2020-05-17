@@ -22,6 +22,9 @@
         "react"
     ],
     "rules": {
-        "react/prop-types": 0
+        "react/prop-types": 0,
+        "linebreak-style":"off",
+        "quotes":"off",
+        "no-labels":"off"
     }
 }

@@ -1,149 +1,79 @@
-/* eslint-disable jsx-a11y/label-has-associated-control */
-import React from 'react';
-import styled from 'styled-components';
-import places from 'places.js';
+import React from "react";
 import {
-  Table, Grid, Button, Icon, Modal, Form, TextArea, Dropdown, Header,
-} from 'semantic-ui-react';
-import DatePicker from 'react-datepicker';
+  Table,
+  Grid,
+  Button,
+  Icon,
+  Header,
+  Loader,
+  List,
+} from "semantic-ui-react";
+import dateformat from "dateformat";
+import "react-datepicker/dist/react-datepicker.css";
+import Sidebar from "./Sidebar";
+import EventForm from "./EventForm";
+import { getEvents, deleteEvent } from "../api";
 
-import 'react-datepicker/dist/react-datepicker.css';
-import Sidebar from './Sidebar';
-
-const Wrapper = styled.div`
-  width:100%;
-  display: inline-flex;
-  justify-content: space-between;
-  .react-datepicker-wrapper{
-    width:45%
-  }
-
-`;
-
-
-const options = [
-  { key: 'm', text: 'Male', value: 'male' },
-  { key: 'f', text: 'Female', value: 'female' },
-  { key: 'o', text: 'Other', value: 'other' },
-];
-
-const EventForm = ({ trigger, setTrigger }) => {
-  const [startDate, setStartDate] = React.useState(new Date('2014/02/08'));
-  const [endDate, setEndDate] = React.useState(new Date('2014/02/10'));
-  const [particpants, setParticiants] = React.useState([{
-    key: 1,
-    text: 'abdelhedi.hlel@aa.fr',
-    value: 1,
-  }, {
-    key: 2,
-    text: 'ahmed.hlel@aa.fr',
-    value: 2,
-  }]);
-  const [place, setPlace] = React.useState();
-
-  function getPlaces(event) {
-    const placesAutocomplete = places({
-      appId: 'pl7S67C0RLLN',
-      apiKey: '1e80c97215c82068df40ccb8c80ec717',
-      container: document.querySelector('#address-input'),
-    });
-    placesAutocomplete.on('change', (e) => {
-      event.textContent = e.suggestion.value;
-    });
-    placesAutocomplete.on('clear', () => {
-      event.textContent = 'none';
-    });
-  }
-
-
-  function submitForm(e) {
-    e.preventDefault();
-  }
-  return (
-    <Modal
-      centered
-      open={trigger}
-      onClose={() => setTrigger()}
-    >
-      <Modal.Header>Nouvelle Événement</Modal.Header>
-      <Modal.Content>
-        <Modal.Description>
-          <Form>
-            <Form.Field>
-              <label>Titre</label>
-              <input placeholder="First Name" />
-            </Form.Field>
-            <Form.Field>
-              <label>Date de début et de fin</label>
-
-              <Wrapper>
-                <DatePicker
-                  selected={startDate}
-                  onChange={(date) => setStartDate(date)}
-                  selectsStart
-                  startDate={startDate}
-                  endDate={endDate}
-                  showTimeSelect
-                  timeFormat="HH:mm"
-                  timeIntervals={15}
-                  timeCaption="time"
-                  dateFormat="MMMM d, yyyy h:mm aa"
-                />
-                <DatePicker
-                  selected={endDate}
-                  onChange={(date) => setEndDate(date)}
-                  selectsEnd
-                  startDate={startDate}
-                  endDate={endDate}
-                  minDate={startDate}
-                  showTimeSelect
-                  timeFormat="HH:mm"
-                  timeIntervals={15}
-                  timeCaption="time"
-                  dateFormat="MMMM d, yyyy h:mm aa"
-                />
-              </Wrapper>
-            </Form.Field>
-            <Form.Field widths="equal">
-              <Form.Select
-                fluid
-                label="Catégorie"
-                options={options}
-                placeholder="Catégorie"
-              />
-            </Form.Field>
-            <Form.Field>
-              <label>Particpants</label>
-              <Dropdown
-                placeholder="State"
-                fluid
-                multiple
-                search
-                selection
-                options={particpants}
-              />
-
-            </Form.Field>
-            <Form.Field>
-              <label>Lieu</label>
-              <input type="search" value={place} onChange={(e) => getPlaces(e)} id="address-input" placeholder="Lieu d'evenement" />
-
-            </Form.Field>
-            <Form.Field />
-            <Form.Field
-              control={TextArea}
-              label="Description"
-              placeholder="Tell us more about you..."
-            />
-            <Button onClick={(e) => submitForm(e)} color="green" type="submit">Submit</Button>
-          </Form>
-        </Modal.Description>
-      </Modal.Content>
-    </Modal>
-  );
+dateformat.i18n = {
+  dayNames: [
+    "Sun",
+    "Mon",
+    "Tue",
+    "Wed",
+    "Thu",
+    "Fri",
+    "Sat",
+    "Dimanche",
+    "Lundi",
+    "Mardi",
+    "Mercredi",
+    "Jeudi",
+    "Vendredi",
+    "Samedi",
+  ],
+  monthNames: [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+    "Janvier",
+    "Février",
+    "Mars",
+    "Avril",
+    "Mai",
+    "Juin",
+    "Juillet",
+    "Aout",
+    "Septembre",
+    "Octobre",
+    "Nouvembre",
+    "Décembre",
+  ],
+  timeNames: ["a", "p", "am", "pm", "A", "P", "AM", "PM"],
 };
+
 const Events = () => {
   const [trigger, setTrigger] = React.useState(false);
+  const [events, setEvents] = React.useState([]);
+  const [elm, setElm] = React.useState();
+  const [loading, setLoading] = React.useState(true);
+  const fetchData = async () => {
+    setLoading(true);
+    const result = await getEvents();
+    setEvents(result.data);
+    setLoading(false);
+  };
+  React.useEffect(() => {
+    fetchData();
+  }, []);
   return (
     <Sidebar>
       <br />
@@ -159,46 +89,87 @@ const Events = () => {
           </Button>
         </Grid.Column>
       </Grid>
-      <EventForm trigger={trigger} setTrigger={() => setTrigger(!trigger)} />
+      <EventForm
+        trigger={trigger}
+        setTrigger={() => setTrigger(!trigger)}
+        event={elm}
+        fetchData={() => fetchData()}
+      />
       <br />
-      <Table striped>
-        <Table.Header>
-          <Table.Row>
-            <Table.HeaderCell>Titre</Table.HeaderCell>
-            <Table.HeaderCell>Date de début</Table.HeaderCell>
-            <Table.HeaderCell>Date de fin</Table.HeaderCell>
-            <Table.HeaderCell>Lieu</Table.HeaderCell>
-            <Table.HeaderCell>Actions</Table.HeaderCell>
-          </Table.Row>
-        </Table.Header>
+      {loading ? (
+        <Loader size="big" active inline="centered" />
+      ) : (
+        <Table striped>
+          <Table.Header>
+            <Table.Row>
+              <Table.HeaderCell>Titre</Table.HeaderCell>
+              <Table.HeaderCell>Date de début</Table.HeaderCell>
+              <Table.HeaderCell>Date de fin</Table.HeaderCell>
+              <Table.HeaderCell>Lieu</Table.HeaderCell>
+              <Table.HeaderCell>Catégorie</Table.HeaderCell>
+              <Table.HeaderCell>Participants</Table.HeaderCell>
+              <Table.HeaderCell>Participants</Table.HeaderCell>
+              <Table.HeaderCell>Actions</Table.HeaderCell>
+            </Table.Row>
+          </Table.Header>
 
-        <Table.Body>
-          <Table.Row>
-            <Table.Cell>John Lilki</Table.Cell>
-            <Table.Cell>15/10/2020 08:00</Table.Cell>
-            <Table.Cell>
-              15/10/2020 18:00
-            </Table.Cell>
-            <Table.Cell>
-              Tunis
-            </Table.Cell>
-            <Table.Cell>
-              <Grid.Row>
-                <Button color="blue" icon>
-                  <Icon name="eye" />
-                </Button>
-                <Button color="grey" icon>
-                  <Icon name="wrench" />
-                </Button>
-                <Button color="red" icon>
-                  <Icon name="trash" />
-                </Button>
-
-              </Grid.Row>
-            </Table.Cell>
-          </Table.Row>
-        </Table.Body>
-      </Table>
+          <Table.Body>
+            {events.map((event) => (
+              <Table.Row key={event.id}>
+                <Table.Cell>{event.title}</Table.Cell>
+                <Table.Cell>
+                  {dateformat(
+                    event.start_date,
+                    "dddd d mmmm yyyy h:MM:ss TT",
+                  )}
+                </Table.Cell>
+                <Table.Cell>
+                  {dateformat(event.end_date, "dddd d mmmm yyyy h:MM:ss TT")}
+                </Table.Cell>
+                <Table.Cell>{event.place}</Table.Cell>
+                <Table.Cell>{event.category}</Table.Cell>
+                <Table.Cell>
+                  <List bulleted>
+                    {event.participants
+                      && event.participants
+                        .split(";")
+                        .map((el, key) => (
+                          <List.Item key={key}>{el}</List.Item>
+                        ))}
+                  </List>
+                </Table.Cell>
+                <Table.Cell>{event.description}</Table.Cell>
+                <Table.Cell>
+                  <Grid.Row>
+                    <Button
+                      onClick={() => {
+                        setElm(event);
+                        setTrigger(true);
+                      }}
+                      color="grey"
+                      icon
+                    >
+                      <Icon name="wrench" />
+                    </Button>
+                    <Button
+                      onClick={async () => {
+                        setLoading(true);
+                        await deleteEvent(event.id);
+                        await fetchData();
+                        setLoading(false);
+                      }}
+                      color="red"
+                      icon
+                    >
+                      <Icon name="trash" />
+                    </Button>
+                  </Grid.Row>
+                </Table.Cell>
+              </Table.Row>
+            ))}
+          </Table.Body>
+        </Table>
+      )}
     </Sidebar>
   );
 };

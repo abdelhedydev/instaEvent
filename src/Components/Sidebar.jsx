@@ -28,7 +28,7 @@ const SidebarExampleSidebar = ({ children }) => {
           visible={visible}
           width="thin"
         >
-          <Menu.Item as="a" onClick={() => goTo('/calendrier')}>
+          <Menu.Item as="a" onClick={() => goTo('/')}>
             <Icon name="calendar alternate" />
             Calendrier
           </Menu.Item>
@@ -36,10 +36,10 @@ const SidebarExampleSidebar = ({ children }) => {
             <Icon name="calendar" />
             Evénements
           </Menu.Item>
-          <Menu.Item as="a" onClick={() => goTo('/connexion')}>
+          {/* <Menu.Item as="a" onClick={() => goTo('/connexion')}>
             <Icon name="arrow alternate circle left outline" />
             Déconnexion
-          </Menu.Item>
+          </Menu.Item> */}
         </Sidebar>
 
         <Sidebar.Pusher>
